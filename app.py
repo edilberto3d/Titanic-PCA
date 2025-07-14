@@ -1,33 +1,32 @@
+from flask import Flask, request, jsonify, render_template
 import joblib
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
-encoder = joblib.load('ordinal_encoder.pkl')
-scaler = joblib.load('robust_scaler.pkl')
-pca = joblib.load('pca_model.pkl')
-model = joblib.load('random_forest_model.pkl')
+# Cargar los artefactos
+encoder = joblib.load('encoder.pkl')
+scaler = joblib.load('datos_scaler.pkl')
+pca = joblib.load('pca.pkl')
+model = joblib.load('modelo_final_randomFores.pkl')
 
-categorical_cols = ['Sex', 'Title', 'Ticket']
+# Columnas categóricas y final
+categorical_cols = ['Sex', 'Ticket']
 features = ['Sex', 'Ticket', 'Age', 'Fare', 'Pclass', 'SibSp', 'Title', 'FamilySize']
 
 @app.route('/')
 def home():
-    return render_template('formulario.html')
+    return render_template('formulario.html')  # Asegúrate de tener este archivo
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        data = {}
-        for feature in features:
-            value = request.form.get(feature)
-            if value is None:
-                return jsonify({'error': f'Missing {feature}'}), 400
-            data[feature] = value
+        # Recoger datos del formulario
+        input_data = {feature: request.form[feature] for feature in features}
 
-        df = pd.DataFrame([data])
-        
+        # Convertir a DataFrame
+        df = pd.DataFrame([input_data])
+
         # Convertir numéricos
         num_cols = ['Age', 'Fare', 'Pclass', 'SibSp', 'FamilySize']
         for col in num_cols:
@@ -42,13 +41,13 @@ def predict():
         # PCA
         X_pca = pca.transform(X_scaled)
 
-        # Predecir
-        pred = model.predict(X_pca)
+        # Predicción
+        prediction = model.predict(X_pca)[0]
 
-        return jsonify({'prediction': int(pred[0])})
-
+        return jsonify({'prediction': int(prediction)})
+    
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

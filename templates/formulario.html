@@ -64,7 +64,8 @@
 
     <h1>Predicción de Supervivencia - Titanic</h1>
 
-    <form action="/predict" method="post" id="predictForm">
+    <form id="predictForm">
+        <!-- Sexo -->
         <label for="Sex">Sexo:</label>
         <select id="Sex" name="Sex" required>
             <option value="">-- Selecciona --</option>
@@ -72,6 +73,7 @@
             <option value="female">Mujer</option>
         </select>
 
+        <!-- Título -->
         <label for="Title">Título:</label>
         <select id="Title" name="Title" required>
             <option value="">-- Selecciona --</option>
@@ -82,15 +84,19 @@
             <option value="Rare">Rare</option>
         </select>
 
+        <!-- Número de ticket -->
         <label for="Ticket">Número de Ticket:</label>
-        <input type="text" id="Ticket" name="Ticket" required>
+        <input type="text" id="Ticket" name="Ticket" placeholder="Ej: A/123456" required>
 
+        <!-- Edad -->
         <label for="Age">Edad:</label>
         <input type="number" id="Age" name="Age" min="0" max="100" step="0.1" required>
 
+        <!-- Tarifa -->
         <label for="Fare">Tarifa (Fare):</label>
         <input type="number" id="Fare" name="Fare" min="0" step="0.01" required>
 
+        <!-- Clase -->
         <label for="Pclass">Clase (1ra, 2da, 3ra):</label>
         <select id="Pclass" name="Pclass" required>
             <option value="">-- Selecciona --</option>
@@ -99,9 +105,11 @@
             <option value="3">Tercera Clase</option>
         </select>
 
+        <!-- Hermanos/Pareja -->
         <label for="SibSp">Número de Hermanos / Cónyuge a bordo (SibSp):</label>
         <input type="number" id="SibSp" name="SibSp" min="0" max="10" required>
 
+        <!-- Tamaño familiar -->
         <label for="FamilySize">Tamaño total de la familia:</label>
         <input type="number" id="FamilySize" name="FamilySize" min="1" max="15" required>
 
@@ -126,7 +134,7 @@
         const data = await response.json();
 
         if (response.ok) {
-            resultDiv.innerHTML = `<h3>Resultado de la Predicción: ${data.prediction == 1 ? 'Sobrevivió' : 'No sobrevivió'}</h3>`;
+            resultDiv.innerHTML = `<h3>Resultado de la Predicción: <span style="color:${data.prediction == 1 ? 'green' : 'red'};">${data.prediction == 1 ? 'Sobrevivió' : 'No sobrevivió'}</span></h3>`;
         } else {
             resultDiv.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
         }
